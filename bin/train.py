@@ -78,7 +78,7 @@ def train_epoch(summary, summary_dev, cfg, args, model, dataloader,
     torch.set_grad_enabled(True)
     model.train()
     device_ids = list(map(int, args.device_ids.split(',')))
-    device = torch.device('cuda:{}'.format(device_ids[0]))
+    device = torch.device('cpu')
     steps = len(dataloader)
     dataiter = iter(dataloader)
     label_header = dataloader.dataset._label_header
@@ -232,7 +232,7 @@ def test_epoch(summary, cfg, args, model, dataloader):
     torch.set_grad_enabled(False)
     model.eval()
     device_ids = list(map(int, args.device_ids.split(',')))
-    device = torch.device('cuda:{}'.format(device_ids[0]))
+    device = torch.device('cpu')
     steps = len(dataloader)
     dataiter = iter(dataloader)
     num_tasks = len(cfg.num_classes)
@@ -290,11 +290,7 @@ def run(args):
 
     device_ids = list(map(int, args.device_ids.split(',')))
     num_devices = torch.cuda.device_count()
-    if num_devices < len(device_ids):
-        raise Exception(
-            '#available gpu : {} < --device_ids : {}'
-            .format(num_devices, len(device_ids)))
-    device = torch.device('cuda:{}'.format(device_ids[0]))
+    device = torch.device('cpu')
 
     model = Classifier(cfg)
     if args.verbose is True:
@@ -322,9 +318,9 @@ def run(args):
     if rc != 0:
         raise Exception('copy folder error : {}'.format(err_msg))
 
+    # print(cfg.train_csv)
     copyfile(cfg.train_csv, os.path.join(args.save_path, 'train.csv'))
     copyfile(cfg.dev_csv, os.path.join(args.save_path, 'dev.csv'))
-
     dataloader_train = DataLoader(
         ImageDataset(cfg.train_csv, cfg, mode='train'),
         batch_size=cfg.train_batch_size, num_workers=args.num_workers,

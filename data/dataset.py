@@ -15,9 +15,10 @@ class ImageDataset(Dataset):
         self._image_paths = []
         self._labels = []
         self._mode = mode
-        self.dict = [{'1.0': '1', '': '0', '0.0': '0', '-1.0': '0'},
-                     {'1.0': '1', '': '0', '0.0': '0', '-1.0': '1'}, ]
+        self.dict = [{'1': '1', '': '0', '0': '0', '-1': '0'},
+                     {'1': '1', '': '0', '0': '0', '-1': '1'}, ]
         with open(label_path) as f:
+            # print('This is f', f)
             header = f.readline().strip('\n').split(',')
             self._label_header = [
                 header[7],
@@ -28,6 +29,7 @@ class ImageDataset(Dataset):
             for line in f:
                 labels = []
                 fields = line.strip('\n').split(',')
+                # print('this is fields', fields)
                 image_path = fields[0]
                 flg_enhance = False
                 for index, value in enumerate(fields[5:]):
