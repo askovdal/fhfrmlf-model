@@ -71,7 +71,7 @@ def run(args):
         raise Exception(
             '#available gpu : {} < --device_ids : {}'
             .format(num_devices, len(device_ids)))
-    device = torch.device('cpu')
+    device = torch.device('cuda:{}'.format(device_ids[0]))
     # load model from ckpt file
     ckpt = torch.load(args.model_file, map_location=device)
     model = model.to(device).eval()

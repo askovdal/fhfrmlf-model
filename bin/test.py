@@ -54,7 +54,7 @@ def test_epoch(cfg, args, model, dataloader, out_csv_path):
     torch.set_grad_enabled(False)
     model.eval()
     device_ids = list(map(int, args.device_ids.split(',')))
-    device = torch.device('cpu')
+    device = torch.device('cuda:{}'.format(device_ids[0]))
     steps = len(dataloader)
     dataiter = iter(dataloader)
     num_tasks = len(cfg.num_classes)
@@ -97,7 +97,7 @@ def run(args):
         raise Exception(
             '#available gpu : {} < --device_ids : {}'
             .format(num_devices, len(device_ids)))
-    device = torch.device('cpu')
+    device = torch.device('cuda:{}'.format(device_ids[0]))
 
     model = Classifier(cfg)
     model = DataParallel(model, device_ids=device_ids).to(device).eval()
