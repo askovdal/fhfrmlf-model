@@ -61,7 +61,7 @@ def run(args):
         'Cardiomegaly',
         'Edema',
         'Consolidation',
-        'Atelectasis',
+        'Pneumothorax',
         'Pleural Effusion'
     ]
     device_ids = list(map(int, args.device_ids.split(',')))

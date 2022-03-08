@@ -64,7 +64,7 @@ def test_epoch(cfg, args, model, dataloader, out_csv_path):
         'Cardiomegaly',
         'Edema',
         'Consolidation',
-        'Atelectasis',
+        'Pneumothorax',
         'Pleural Effusion']
 
     with open(out_csv_path, 'w') as f:

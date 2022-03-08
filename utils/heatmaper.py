@@ -14,7 +14,7 @@ disease_classes = [
     'Cardiomegaly',
     'Edema',
     'Consolidation',
-    'Atelectasis',
+    'Pneumothorax',
     'Pleural Effusion'
 ]
 

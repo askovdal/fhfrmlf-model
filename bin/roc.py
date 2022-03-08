@@ -86,8 +86,8 @@ def transform_csv_en(input_path, output_path):
     outfile['Edema'] = groups['Edema'].max().reset_index()['Edema']
     outfile['Consolidation'] = groups['Consolidation'].mean().reset_index()[
         'Consolidation']
-    outfile['Atelectasis'] = groups['Atelectasis'].mean().reset_index()[
-        'Atelectasis']
+    outfile['Pneumothorax'] = groups['Pneumothorax'].mean().reset_index()[
+        'Pneumothorax']
     outfile['Pleural Effusion'] = groups['Pleural Effusion'].mean(
     ).reset_index()['Pleural Effusion']
     outfile.to_csv(output_path, index=False)
