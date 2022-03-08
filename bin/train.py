@@ -376,6 +376,11 @@ def run(args):
         for i in range(len(cfg.num_classes)):
             y_pred = predlist[i]
             y_true = true_list[i]
+
+            logging.info(time.strftime("%Y-%m-%d %H:%M:%S"))
+            logging.info('y_pred: {}'.format(y_pred))
+            logging.info('y_true: {}'.format(y_true))
+
             fpr, tpr, thresholds = metrics.roc_curve(
                 y_true, y_pred, pos_label=1)
             auc = metrics.auc(fpr, tpr)
