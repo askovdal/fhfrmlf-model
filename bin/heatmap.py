@@ -62,7 +62,7 @@ def run(args):
         'Edema',
         'Consolidation',
         'Pneumothorax',
-        'Pleural Effusion'
+        'Pleural_Effusion'
     ]
     device_ids = list(map(int, args.device_ids.split(',')))
     # check device

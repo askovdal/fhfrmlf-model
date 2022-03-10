@@ -15,7 +15,7 @@ disease_classes = [
     'Edema',
     'Consolidation',
     'Pneumothorax',
-    'Pleural Effusion'
+    'Pleural_Effusion'
 ]
 
 
