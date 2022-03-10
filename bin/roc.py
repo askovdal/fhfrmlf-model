@@ -108,7 +108,7 @@ def run(args):
     # num_labels = len(header_true) - 5
     num_labels = 5
     header = [header_true[7], header_true[10], header_true[11],
-              header_true[13], header_true[15]]
+              header_true[14], header_true[15]]
 
     for i in range(num_labels):
         label = header[i]

@@ -24,7 +24,7 @@ class ImageDataset(Dataset):
                 header[7],
                 header[10],
                 header[11],
-                header[13],
+                header[14],
                 header[15]]
             for line in f:
                 labels = []
