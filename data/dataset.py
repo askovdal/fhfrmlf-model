@@ -20,12 +20,7 @@ class ImageDataset(Dataset):
         with open(label_path) as f:
             # print('This is f', f)
             header = f.readline().strip('\n').split(',')
-            self._label_header = [
-                header[7],
-                header[10],
-                header[11],
-                header[14],
-                header[15]]
+            self._label_header = [header[14]]
             for line in f:
                 labels = []
                 fields = line.strip('\n').split(',')
@@ -39,7 +34,7 @@ class ImageDataset(Dataset):
                                 value) == '1' and \
                                 self.cfg.enhance_index.count(index) > 0:
                             flg_enhance = True
-                    elif index == 2 or index == 6 or index == 10:
+                    elif index == (14-5) or index == 6 or index == 10:
                         labels.append(self.dict[0].get(value))
                         if self.dict[0].get(
                                 value) == '1' and \
