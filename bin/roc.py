@@ -42,9 +42,9 @@ def read_csv(csv_path, true_csv=False):
             else:
                 prob = []
                 for index, value in enumerate(fields[5:]):
-                    if index == 5 or index == 8:
+                    if index == (10 - 5) or index == (12 - 5):
                         prob.append(dict_[1].get(value))
-                    elif index == 2 or index == 6 or index == 10:
+                    elif index == (7 - 5) or index == (11 - 5) or index == (14 - 5):
                         prob.append(dict_[0].get(value))
                 prob = list(map(int, prob))
                 probs.append(prob)
