@@ -58,11 +58,11 @@ def run(args):
         cfg = edict(json.load(f))
         model = Classifier(cfg)
     disease_classes = [
-        'Cardiomegaly',
+        'Pneumothorax',
         'Edema',
         'Consolidation',
-        'Pneumothorax',
-        'Pleural_Effusion'
+        'Cardiomegaly',
+        'Pneumonia'
     ]
     device_ids = list(map(int, args.device_ids.split(',')))
     # check device

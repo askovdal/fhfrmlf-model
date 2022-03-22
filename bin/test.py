@@ -26,9 +26,9 @@ parser.add_argument('--out_csv_path', default='test/test.csv',
                     metavar='OUT_CSV_PATH', type=str,
                     help="Path to the ouput predictions in csv")
 parser.add_argument('--num_workers', default=8, type=int, help="Number of "
-                    "workers for each data loader")
+                                                               "workers for each data loader")
 parser.add_argument('--device_ids', default='0', type=str, help="GPU indices "
-                    "comma separated, e.g. '0,1' ")
+                                                                "comma separated, e.g. '0,1' ")
 
 if not os.path.exists('test'):
     os.mkdir('test')
@@ -60,12 +60,12 @@ def test_epoch(cfg, args, model, dataloader, out_csv_path):
     num_tasks = len(cfg.num_classes)
 
     test_header = [
-        'Path',
-        'Cardiomegaly',
+        'Pneumothorax',
         'Edema',
         'Consolidation',
-        'Pneumothorax',
-        'Pleural_Effusion']
+        'Cardiomegaly',
+        'Pneumonia'
+    ]
 
     with open(out_csv_path, 'w') as f:
         f.write(','.join(test_header) + '\n')
@@ -96,7 +96,7 @@ def run(args):
     if num_devices < len(device_ids):
         raise Exception(
             '#available gpu : {} < --device_ids : {}'
-            .format(num_devices, len(device_ids)))
+                .format(num_devices, len(device_ids)))
     device = torch.device('cuda:{}'.format(device_ids[0]))
 
     model = Classifier(cfg)

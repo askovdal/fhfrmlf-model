@@ -5,6 +5,7 @@ import os
 from PIL import Image
 from data.imgaug import GetTransforms
 from data.utils import transform
+
 np.random.seed(0)
 
 
@@ -21,11 +22,11 @@ class ImageDataset(Dataset):
             # print('This is f', f)
             header = f.readline().strip('\n').split(',')
             self._label_header = [
-                header[7],
+                header[14],
                 header[10],
                 header[11],
-                header[14],
-                header[15]]
+                header[7],
+                header[12]]
             for line in f:
                 labels = []
                 fields = line.strip('\n').split(',')
@@ -33,13 +34,13 @@ class ImageDataset(Dataset):
                 image_path = fields[0]
                 flg_enhance = False
                 for index, value in enumerate(fields[5:]):
-                    if index == 5 or index == 8:
+                    if index == (10 - 5) or index == (12 - 5):
                         labels.append(self.dict[1].get(value))
                         if self.dict[1].get(
                                 value) == '1' and \
                                 self.cfg.enhance_index.count(index) > 0:
                             flg_enhance = True
-                    elif index == 2 or index == 6 or index == 10:
+                    elif index == (7 - 5) or index == (11 - 5) or index == (14 - 5):
                         labels.append(self.dict[0].get(value))
                         if self.dict[0].get(
                                 value) == '1' and \

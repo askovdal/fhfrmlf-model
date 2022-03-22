@@ -11,11 +11,11 @@ from model.utils import tensor2numpy # noqa
 
 
 disease_classes = [
-    'Cardiomegaly',
+    'Pneumothorax',
     'Edema',
     'Consolidation',
-    'Pneumothorax',
-    'Pleural_Effusion'
+    'Cardiomegaly',
+    'Pneumonia'
 ]
 
 
