@@ -10,13 +10,7 @@ from data.utils import transform # noqa
 from model.utils import tensor2numpy # noqa
 
 
-disease_classes = [
-    'Pneumothorax',
-    'Edema',
-    'Consolidation',
-    'Cardiomegaly',
-    'Pneumonia'
-]
+disease_classes = ['Pneumothorax']
 
 
 def fig2data(fig):
