@@ -60,6 +60,7 @@ def test_epoch(cfg, args, model, dataloader, out_csv_path):
     num_tasks = len(cfg.num_classes)
 
     test_header = [
+        'Path',
         'Pneumothorax',
         'Edema',
         'Consolidation',
