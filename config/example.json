@@ -17,7 +17,7 @@
     "batch_weight": true,
     "enhance_index": [2,6],
     "enhance_times": 1,
-    "pos_weight": [1,1,1,1,1],
+    "pos_weight": [1],
     "train_batch_size": 56,
     "dev_batch_size": 56,
     "pretrained": true,
@@ -39,5 +39,5 @@
     "weight_decay": 0.0,
     "best_target": "auc",
     "save_top_k": 3,
-    "save_index": [0,1,2,3,4]
+    "save_index": [0]
 }
