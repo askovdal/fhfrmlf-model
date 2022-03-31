@@ -7,10 +7,11 @@ import time
 import torch
 import json
 from easydict import EasyDict as edict
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
-from model.classifier import Classifier # noqa
-from data.utils import transform # noqa
-from utils.heatmaper import Heatmaper # noqa
+from model.classifier import Classifier  # noqa
+from data.utils import transform  # noqa
+from utils.heatmaper import Heatmaper  # noqa
 
 torch.manual_seed(0)
 torch.cuda.manual_seed_all(0)
@@ -57,20 +58,12 @@ def run(args):
     with open(cfg_file) as f:
         cfg = edict(json.load(f))
         model = Classifier(cfg)
-    disease_classes = [
-        'Pneumothorax',
-        'Edema',
-        'Consolidation',
-        'Cardiomegaly',
-        'Pneumonia'
-    ]
+    disease_classes = ['Pneumothorax']
     device_ids = list(map(int, args.device_ids.split(',')))
     # check device
     num_devices = torch.cuda.device_count()
     if num_devices < len(device_ids):
-        raise Exception(
-            '#available gpu : {} < --device_ids : {}'
-            .format(num_devices, len(device_ids)))
+        raise Exception('#available gpu : {} < --device_ids : {}'.format(num_devices, len(device_ids)))
     device = torch.device('cuda:{}'.format(device_ids[0]))
     # load model from ckpt file
     ckpt = torch.load(args.model_file, map_location=device)
@@ -81,7 +74,7 @@ def run(args):
         os.mkdir(args.plot_path)
     # construct heatmap_cfg
     heatmaper = Heatmaper(args.alpha, args.prefix, cfg, model, device)
-    assert args.prefix in ['none', *(disease_classes)]
+    assert args.prefix in ['none', *disease_classes]
     with open(args.txt_file) as f:
         for line in f:
             time_start = time.time()
@@ -92,13 +85,11 @@ def run(args):
             assert cv2.imwrite(save_file, figure_data), "write failed!"
             time_spent = time.time() - time_start
             logging.info(
-                '{}, {}, heatmap generated, Run Time : {:.2f} sec'
-                .format(time.strftime("%Y-%m-%d %H:%M:%S"),
-                        jpg_file, time_spent))
+                '{}, {}, heatmap generated, Run Time : {:.2f} sec'.format(time.strftime("%Y-%m-%d %H:%M:%S"), jpg_file,
+                                                                          time_spent))
 
 
 def main():
-
     args = parser.parse_args()
     run(args)
 
