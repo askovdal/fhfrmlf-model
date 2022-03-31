@@ -30,8 +30,8 @@ parser.add_argument('--prob_thred', default=0.5, type=float,
 def read_csv(csv_path, true_csv=False):
     image_paths = []
     probs = []
-    dict_ = [{'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0'},
-             {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '1', '-1': '1'}, ]
+    dict_ = [{'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0', 'Unknown': '0'},
+             {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '1', '-1': '1', 'Unknown': '0'}, ]
     with open(csv_path) as f:
         header = f.readline().strip('\n').split(',')
         for line in f:
