@@ -30,24 +30,20 @@ parser.add_argument('--prob_thred', default=0.5, type=float,
 def read_csv(csv_path, true_csv=False):
     image_paths = []
     probs = []
-    dict_ = [{'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0', 'Unknown': '0'},
-             {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '1', '-1': '1', 'Unknown': '0'}, ]
+    dict_ = {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0', 'Unknown': '0'}
+
     with open(csv_path) as f:
         header = f.readline().strip('\n').split(',')
         for line in f:
             fields = line.strip('\n').split(',')
             image_paths.append(fields[0])
+
             if true_csv is False:
                 probs.append(list(map(float, fields[1:])))
             else:
-                prob = []
-                for index, value in enumerate(fields[5:]):
-                    if index == (10 - 5) or index == (12 - 5):
-                        prob.append(dict_[1].get(value))
-                    elif index == (7 - 5) or index == (11 - 5) or index == (14 - 5):
-                        prob.append(dict_[0].get(value))
-                prob = list(map(int, prob))
+                prob = [int(dict_.get(fields[14]))]
                 probs.append(prob)
+
     probs = np.array(probs)
 
     return (image_paths, probs, header)
@@ -81,15 +77,7 @@ def transform_csv_en(input_path, output_path):
     infile['Study'] = infile.Path.apply(get_study)
     outfile = infile.drop('Path', axis=1).groupby('Study').mean().reset_index()
     groups = infile.drop('Path', axis=1).groupby('Study')
-    outfile['Pneumothorax'] = groups['Pneumothorax'].mean().reset_index()[
-        'Pneumothorax']
-    outfile['Edema'] = groups['Edema'].max().reset_index()['Edema']
-    outfile['Consolidation'] = groups['Consolidation'].mean().reset_index()[
-        'Consolidation']
-    outfile['Cardiomegaly'] = groups['Cardiomegaly'].min().reset_index()[
-        'Cardiomegaly']
-    outfile['Pneumonia'] = groups['Pneumonia'].mean(
-    ).reset_index()['Pneumonia']
+    outfile['Pneumothorax'] = groups['Pneumothorax'].mean().reset_index()['Pneumothorax']
     outfile.to_csv(output_path, index=False)
 
 
