@@ -135,7 +135,7 @@ class Heatmaper(object):
         num_tasks = len(disease_classes)
         row_ = num_tasks // 3 + 1
         plt_fig = plt.figure(figsize=(10, row_*4), dpi=300)
-        prefix = -1 if self.prefix is None else \
+        prefix = -1 if self.prefix is 'none'  else \
             disease_classes.index(self.prefix)
         prefix_name = ''
         # vgg and resnet do not use pixel_std, densenet and inception use.
