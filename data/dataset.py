@@ -16,45 +16,20 @@ class ImageDataset(Dataset):
         self._image_paths = []
         self._labels = []
         self._mode = mode
-        self.dict = [{'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0'},
-                     {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '1', '-1': '1'}, ]
+        self.dict = {'1.0': '1', '1': '1', '': '0', '0.0': '0', '0': '0', '-1.0': '0', '-1': '0'}
         with open(label_path) as f:
-            # print('This is f', f)
             header = f.readline().strip('\n').split(',')
-            self._label_header = [
-                header[14],
-                header[10],
-                header[11],
-                header[7],
-                header[12]]
+            self._label_header = [header[14]]
             for line in f:
-                labels = []
                 fields = line.strip('\n').split(',')
-                # print('this is fields', fields)
+
+                labels = [int(self.dict.get(fields[14]))]
+                self._labels.append(labels)
+
                 image_path = fields[0]
-                flg_enhance = False
-                for index, value in enumerate(fields[5:]):
-                    if index == (10 - 5) or index == (12 - 5):
-                        labels.append(self.dict[1].get(value))
-                        if self.dict[1].get(
-                                value) == '1' and \
-                                self.cfg.enhance_index.count(index) > 0:
-                            flg_enhance = True
-                    elif index == (7 - 5) or index == (11 - 5) or index == (14 - 5):
-                        labels.append(self.dict[0].get(value))
-                        if self.dict[0].get(
-                                value) == '1' and \
-                                self.cfg.enhance_index.count(index) > 0:
-                            flg_enhance = True
-                # labels = ([self.dict.get(n, n) for n in fields[5:]])
-                labels = list(map(int, labels))
                 self._image_paths.append(image_path)
                 assert os.path.exists(image_path), image_path
-                self._labels.append(labels)
-                if flg_enhance and self._mode == 'train':
-                    for i in range(self.cfg.enhance_times):
-                        self._image_paths.append(image_path)
-                        self._labels.append(labels)
+
         self._num_image = len(self._image_paths)
 
     def __len__(self):
