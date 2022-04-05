@@ -80,8 +80,12 @@ def run(args):
             time_start = time.time()
             jpg_file = line.strip('\n')
             prefix, figure_data = heatmaper.gen_heatmap(jpg_file)
-            bn = os.path.basename(jpg_file)
-            save_file = '{}/{}{}'.format(args.plot_path, prefix, bn)
+
+            # Create file name from last 3 parts of the file path
+            file_name = jpg_file.split('/')[-3:]
+            file_name = '-'.join(file_name)
+
+            save_file = '{}/{}{}'.format(args.plot_path, prefix, file_name)
             assert cv2.imwrite(save_file, figure_data), "write failed!"
             time_spent = time.time() - time_start
             logging.info(
