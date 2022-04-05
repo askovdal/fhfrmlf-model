@@ -126,6 +126,10 @@ class Heatmaper(object):
         prob_maps_np = tensor2numpy(torch.sigmoid(logit_maps))
         logit_maps_np = tensor2numpy(logit_maps)
 
+        # Convert all probabilities by computing their complements
+        complement = np.vectorize(lambda x: 1 - x)
+        prob_maps_np = complement(prob_maps_np)
+
         num_tasks = len(disease_classes)
         row_ = num_tasks // 3 + 1
         plt_fig = plt.figure(figsize=(10, row_*4), dpi=300)
