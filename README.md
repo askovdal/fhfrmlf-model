@@ -1,128 +1,81 @@
-# Top1 Solution of CheXpert
+# Title
+Finding Hidden Features Responsible for Machine Learning Failures
 
-## What is Chexpert?
-CheXpert is a large dataset of chest X-rays and competition for automated chest x-ray interpretation, which features uncertainty labels and radiologist-labeled reference standard evaluation sets.
-## Why Chexpert?
-Chest radiography is the most common imaging examination globally, critical for screening, diagnosis, and management of many life threatening diseases. Automated chest radiograph interpretation at the level of practicing radiologists could provide substantial benefit in many medical settings, from improved workflow prioritization and clinical decision support to large-scale screening and global population health initiatives. For progress in both development and validation of automated algorithms, we realized there was a need for a labeled dataset that (1) was large, (2) had strong reference standards, and (3) provided expert human performance metrics for comparison.
-## How to take part in?
-CheXpert uses a hidden test set for official evaluation of models. Teams submit their executable code on Codalab, which is then run on a test set that is not publicly readable. Such a setup preserves the integrity of the test results.
+## Contents
+This repository includes all model-related scripts and files.
 
-Here's a tutorial walking you through official evaluation of your model. Once your model has been evaluated officially, your scores will be added to the leaderboard.**Please refer to the** [https://stanfordmlgroup.github.io/competitions/chexpert/](https://stanfordmlgroup.github.io/competitions/chexpert/)
-## What the code include?
-* If you want to train yourself from scratch, we provide training and test the footwork code. In addition, we provide complete training courses
-* If you want to use our model in your method, we provide **a best single network pre-training model,** and you can get the network code in the code
+In order of the repository structure; 
+* Bin Folder 
+  * heatmap.py - for construction of heatmaps 
+  * roc.py - outputs an roc graph with area under the curve score
+  * roc-multi.py - outputs multiple roc graphs in one image with area under the curve scores 
+  * test.py, train.py - respective scripts for testing and training the model
+  * test-ensemble.py - tests the 3 best epochs of our model and returns each epoch's passed probabilities for each image
+* Config Folder 
+  * The .csv files are generated from scripts from our data preprocessing repository: https://github.com/askovdal/fhfrmlf 
+  * config.json - includes the configuration of our model 
+* data
+  * dataset.py - used to load data for train.py and test.py in Bin Folder
+  * imgaug.py - script for augmenting images
+  * utils.py - includes utility functions such as border padding and transformation
+* Model folder
+  * Backbone folder
+    * init.py - initialization file
+    * densenet.py - includes the different densenet architectures that can be called in the config.json file
+    * inception.py - includes the inception architecture --
+    * vgg.py - includes the different vgg architectures --
+  * attention_map.py - implements the attention map specified in the config.json file 
+  * classifier.py - runs the classifier combination specified in the config.json file, giving the resulting model
+  * global_pool.py - implements the different global pooling operations, our study uses PCAM
+  * utils.py - includes utility functions to get normalization and optimiser types, as well as transforming tensor to numpy.
+* Utils folder
+  * heatmaper.py - implements the method for creating the heatmaps from the global pooling operation, our PCAM example is specified in this paper: https://arxiv.org/abs/2005.14480
+  * misc.py - includes a learning rate scheduling function
+* PCAM.png - An image describing the composition of the model used for our research 
+* requirements.txt - A statement of what packages are needed and the minimal working version of them.
 
-### Train the model by yourself
+## How to reproduce our results
 
-* Data preparation
-> We gave you the example file, which is in the folder `config/train.csv`
-> You can follow it and write its path to `config/example.json`
+### Technical prerequisites
+To reproduce our results, the following is needed:
+* 4 CUDA GPUs
+* 16 CPU cores
+* +64 GB RAM  
 
-* If you want to train the model,please run the command. (We use 4 1080Ti for training, so larger than 4 gpus is recommended）:
-> `pip install -r requirements.txt`
-> 
-> `python Chexpert/bin/train.py Chexpert/config/example.json logdir --num_workers 8 --device_ids "0,1,2,3"`
+These requirements are due to the large data size and model complexity.
 
-* If you want to test your model, please run the command:
-> `cd logdir/`
+### Software requirements
+The following software is needed to run the scripts:
+* Python 3
+* pip packages listed in `requirements.txt` 
 
-* Cuz we set "save_top_k": 3 in the `config/example.json`, so we may have got 3 models for ensemble here. So you should do as below:
-> `cp best1.ckpt best.ckpt`
-> 
-> `python classification/bin/test.py`
+### Training the model
+Run the following script using python 3. The resulting model will be saved to `logdir-50-50`
+```
+python3 bin/train.py config/config.json logdir-50-50 --num_workers 16 --device_ids "0,1,2,3" --verbose True
+```
 
-* If you want to plot the roc figure and get the AUC, please run the command
-> `python classification/bin/roc.py plotname`
+### Testing the model
+Run the following scripts. The model will be tested on the three different experimental setups described in Section 5.1.1
+```
+python3 logdir-50-50/classification/bin/test.py --model_path "logdir-50-50/" --in_csv_path "config/pneumothorax-mixed-p-tube-split.csv" --out_csv_path "logdir-50-50/tube-split/test.csv" --device_ids "0,1,2,3" --num_workers 16
+python3 logdir-50-50/classification/bin/test.py --model_path "logdir-50-50/" --in_csv_path "config/pneumothorax-mixed-p-w-tube.csv" --out_csv_path "logdir-50-50/w-tube/test.csv" --device_ids "0,1,2,3" --num_workers 16
+python3 logdir-50-50/classification/bin/test.py --model_path "logdir-50-50/" --in_csv_path "config/pneumothorax-mixed-p-wo-tube.csv" --out_csv_path "logdir-50-50/wo-tube/test.csv" --device_ids "0,1,2,3" --num_workers 16
+```
 
- * *How about drink a cup of coffee?*
-> you can run the command like this. Then you can have a cup of caffe.(log will be written down on the disk)
-`python Chexpert/bin/train.py Chexpert/config/example.json logdir --num_workers 8 --device_ids "0,1,2,3" --logtofile True &`
+To generate the ROC curves, run the following script.
+```
+python3 logdir-50-50/classification/bin/roc-multi.py plot --plot_path0 "logdir-50-50/w-tube/" --plot_path1 "logdir-50-50/tube-split/" --plot_path2 "logdir-50-50/wo-tube/"
+```
 
-### train the model with pre-trained weights
-* We provide one pre-trained model here: `config/pre_train.pth`
-we test it on 200 patients dataset, got the **AUC** as below:
+To generate heatmaps, create a txt file called `images.txt` containing the images you want to create heatmaps on, and run the following script. The heatmaps will be saved to the `heatmaps` folder.
+```
+python3 logdir-50-50/classification/bin/heatmap.py logdir-50-50/best.ckpt logdir-50-50/cfg.json images.txt heatmaps/ --device_ids '0'
+```
 
-|Cardiomegaly|Edema|Consolidation|Atelectasis|Pleural_Effusion|
-|---------|-----|---|----|-----|
-|0.8703|0.9436|0.9334|0.9029|0.9166|
-
-* You can train the model with pre-trained weights, run the command as below:
-
-> `python Chexpert/bin/train.py Chexpert/config/example.json logdir --num_workers 8 --device_ids "0,1,2,3" --pre_train "Chexpert/config/pre_train.pth" `
-
-### Plot heatmap using trained model
-
-* Currently supported global_pool options in `/config/example.json` to plot heatmaps
-
-|global_pool|Support|
-|------|-----|
-|MAX|Yes|
-|AVG|Yes|
-|EXP|Yes|
-|LSE|Yes|
-|LINEAR|Yes|
-|PCAM|Yes|
-|AVG_MAX|No|
-|AVG_MAX_LSE|No|
-
-* We also provide heatmap comparision here, including AVG, [LSE](https://arxiv.org/abs/1705.02315), and our own [PCAM](https://arxiv.org/abs/2005.14480) pooling.
-
-
-<table>
-  <tr>
-    <td> </td>
-		<td>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;original&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
-		<td><a  href="config/example_AVG.json"><font size=2>AVG (dev mAUC:0.895)</font></a></td>
-    <td><a  href="config/example_LSE.json"><font size=2>LSE (dev mAUC:0.896)</font></a></td>
-    <td><a   href="config/example_PCAM.json"><font size=2>PCAM (dev mAUC:0.896)</font></a></td>
-	<tr>
-  <tr>
-    <td>Cardiomegaly </td>
-		<td colspan="4"><img src="Cardiomegaly.jpg"></td>
-	<tr>
-  <tr>
-    <td>Atelectasis </td>
-		<td colspan="4"><img src="Atelectasis.jpg"></td>
-        <tr>
-    <td>Pleural Effusion </td>
-		<td colspan="4"><img src="Pleural_Effusion.jpg"></td>
-           <tr>
-    <td>Consolidation </td>
-		<td colspan="4"><img src="Consolidation.jpg"></td>
-</table>
-
-* You can plot heatmaps using command as below:
-
-
-> `python Chexpert/bin/heatmap.py logdir/best1.ckpt logdir/cfg.json CheXper_valid.txt logdir/heatmap_Cardiomegaly/ --device_ids '0' --prefix 'Cardiomegaly'`
-
-> Where the `CheXper_valid.txt` contains lines of jpg path 
-
-### About [PCAM](https://arxiv.org/abs/2005.14480) pooling
-
-* PCAM Overview:
-
-<img src="PCAM.png" width="100%" align="middle"/>
-
-* If you think PCAM is a good way to generate heatmaps, you can cite our article like this:
-
-### Citation
-
-    @misc{ye2020weakly,
-        title={Weakly Supervised Lesion Localization With Probabilistic-CAM Pooling},
-        author={Wenwu Ye and Jin Yao and Hui Xue and Yi Li},
-        year={2020},
-        eprint={2005.14480},
-        archivePrefix={arXiv},
-        primaryClass={cs.CV}
-    }
-
-
-### Contact
-* If you have any quesions, please post it on github issues or email at coolver@sina.com
-
-### Reference
-* [https://stanfordmlgroup.github.io/competitions/chexpert/](https://stanfordmlgroup.github.io/competitions/chexpert/)
-* [http://www.jfhealthcare.com/](http://www.jfhealthcare.com/)
-
-
+### Testing the ensemble
+When training the model, the 3 best epochs were saved as `best1.ckpt`, `best2.ckpt` and `best3.ckpt`. Run the following script to test all and save their predictions.
+```
+python3 logdir-50-50/classification/bin/test-ensemble.py --model_path "logdir-50-50/" --in_csv_path "config/pneumothorax-mixed-p-w-tube.csv" --out_csv_path "logdir-50-50/ensemble-w-tube/test.csv" --device_ids "0,1,2,4" --num_workers 16
+```
+The resulting CSV-file can be used to create a correlation matrix with the script `correlation.py` in https://github.com/askovdal/fhfrmlf.
